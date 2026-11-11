@@ -1,7 +1,7 @@
 function About() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-14">
-      <h1 className="font-serif text-3xl font-bold text-ink">เกี่ยวกับ Book Review</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">เกี่ยวกับ Book Review</h1>
       <div className="mt-6 space-y-4 leading-loose text-ink-soft">
         <p>
           เว็บรีวิวหนังสือ โปรเจกต์ประกอบวิชา 520 341 Client Side Web Programming พัฒนาต่อจากโครงสร้าง MovieHub

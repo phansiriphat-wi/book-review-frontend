@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import BookCover from './BookCover';
+import { Book } from './ui/Book';
 import { StarDisplay } from './StarRating';
 
 // การ์ดหนังสือ 1 เล่ม รับ object รูปร่างเดียวกันทั้งจาก Go และ openlibrary.js:
@@ -9,8 +9,7 @@ function BookCard({ book, category, action }) {
   return (
     <div className="group flex flex-col">
       <Link to={`/books/${book.id}`} state={{ category, publishedYear: book.publishedYear }} className="block rounded-[3px]">
-        <BookCover src={book.coverUrl} title={book.title}
-                   className="transition-transform duration-200 group-hover:-translate-y-1" />
+        <Book src={book.coverUrl} title={book.title} />
         <h3 className="mt-3 line-clamp-2 font-serif text-[15px] font-semibold leading-snug text-ink group-hover:text-cloth"
             title={book.title}>
           {book.title}

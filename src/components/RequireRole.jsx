@@ -12,7 +12,7 @@ function RequireRole({ role, children }) {
   if (user?.role !== role) {
     return (
       <div className="px-4 py-24 text-center">
-        <p className="font-serif text-5xl font-bold text-line">403</p>
+        <p className="font-serif text-5xl font-medium text-line">403</p>
         <h1 className="mt-3 text-lg font-medium text-ink">หน้านี้สำหรับผู้ดูแลระบบเท่านั้น</h1>
         <p className="mt-1 text-sm text-ink-soft">บัญชีของคุณเป็น {user?.role ?? 'member'}</p>
         <Link to="/" className="mt-5 inline-block text-sm text-cloth hover:underline">กลับหน้าแรก</Link>

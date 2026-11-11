@@ -8,7 +8,7 @@ function Star({ fill, className }) {
       <defs>
         <linearGradient id={id}>
           <stop offset={`${fill * 100}%`} stopColor="currentColor" />
-          <stop offset={`${fill * 100}%`} stopColor="#E2E6EC" />
+          <stop offset={`${fill * 100}%`} stopColor="#E8DCCF" />
         </linearGradient>
       </defs>
       <path fill={`url(#${id})`}
@@ -45,7 +45,7 @@ export function StarInput({ value, onChange, disabled, name = 'rating' }) {
             <input type="radio" name={name} value={n} checked={value === n} onChange={() => onChange(n)}
                    className="peer sr-only" aria-label={`${n} ดาว`} />
             <span className={'block rounded peer-focus-visible:ring-2 peer-focus-visible:ring-cloth ' +
-                             (value >= n ? 'text-gilt' : 'text-[#C5CCD6] hover:text-gilt')}>
+                             (value >= n ? 'text-gilt' : 'text-[#D9C4B0] hover:text-gilt')}>
               <svg viewBox="0 0 20 20" className="h-7 w-7" aria-hidden="true">
                 <path fill="currentColor" d="M10 1.6l2.5 5.4 5.9.7-4.4 4 1.2 5.8L10 14.6l-5.2 2.9L6 11.7 1.6 7.7l5.9-.7z" />
               </svg>
