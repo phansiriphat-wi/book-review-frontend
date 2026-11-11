@@ -11,7 +11,7 @@ function Stat({ label, value, to }) {
   const body = (
     <>
       <dt className="text-sm text-ink-soft">{label}</dt>
-      <dd className="mt-1 font-serif text-3xl font-bold text-ink">{value}</dd>
+      <dd className="mt-1 font-serif text-3xl font-medium text-ink">{value}</dd>
     </>
   );
   return to

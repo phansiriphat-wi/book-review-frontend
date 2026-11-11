@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import BookCover from '../components/BookCover';
+import { Book } from '../components/ui/Book';
 import BookActions from '../components/BookActions';
 import ReviewForm from '../components/ReviewForm';
 import ReviewList from '../components/ReviewList';
@@ -115,7 +115,7 @@ function BookDetail() {
   if (status === 'error') {
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="font-serif text-2xl font-bold text-ink">ไม่พบหนังสือเล่มนี้</h1>
+        <h1 className="font-serif text-2xl font-medium text-ink">ไม่พบหนังสือเล่มนี้</h1>
         <p className="mt-2 text-sm text-ink-soft">{error.message}</p>
         <Link to="/books" className="mt-6 inline-block text-sm text-cloth hover:underline">กลับไปหน้าหนังสือ</Link>
       </div>
@@ -131,12 +131,12 @@ function BookDetail() {
       </button>
 
       <div className="mt-6 flex flex-col gap-10 md:flex-row">
-        <div className="w-48 shrink-0 self-start md:w-64">
-          <BookCover src={book.coverUrl} title={book.title} size="lg" />
+        <div className="group w-48 shrink-0 self-start md:w-64">
+          <Book src={book.coverUrl} title={book.title} size="lg" textured />
         </div>
 
         <div className="min-w-0 flex-1">
-          <h1 className="font-serif text-3xl font-bold leading-tight text-ink md:text-4xl">{book.title}</h1>
+          <h1 className="font-serif text-3xl font-medium leading-tight text-ink md:text-4xl">{book.title}</h1>
           <p className="mt-2 text-lg text-ink-soft">{book.author}</p>
           <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             {book.publishedYear && (
@@ -173,7 +173,7 @@ function BookDetail() {
       </div>
 
       <section className="mt-14 border-t border-line pt-10" aria-labelledby="reviews-heading">
-        <h2 id="reviews-heading" className="font-serif text-2xl font-bold text-ink">
+        <h2 id="reviews-heading" className="font-serif text-2xl font-medium text-ink">
           รีวิวจากสมาชิก {reviewStatus === 'success' && <span className="font-sans text-base font-normal text-ink-faint">({reviews.reviewCount})</span>}
         </h2>
 

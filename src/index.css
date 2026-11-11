@@ -3,16 +3,107 @@
 @tailwind utilities;
 
 body {
-  @apply bg-paper text-ink antialiased;
+  @apply bg-white text-ink antialiased;
+  background-image:
+    radial-gradient(40rem 40rem at 100% -10%, rgba(187, 220, 229, .55), transparent 70%),
+    radial-gradient(34rem 34rem at -10% 45%, rgba(236, 238, 223, .9), transparent 70%),
+    radial-gradient(36rem 36rem at 110% 95%, rgba(217, 196, 176, .45), transparent 70%);
 }
+::selection { background: #BBDCE5; color: #3B312A; }
 
 /* วงโฟกัสเห็นชัดเวลาใช้คีย์บอร์ด */
 :focus-visible {
-  @apply outline-none ring-2 ring-cloth ring-offset-2;
+  @apply outline-none ring-2 ring-cloth ring-offset-2 ring-offset-white;
 }
+
+/* หนังสือ 3 มิติ: เงาสันปก และการหมุนเมื่อชี้/โฟกัสที่ตัวแม่ class="group" */
+:root {
+  --book-bind: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0) 12%, rgba(255,255,255,.25) 29.25%, rgba(255,255,255,0) 50.5%, rgba(255,255,255,0) 75.25%, rgba(255,255,255,.25) 91%, rgba(255,255,255,0)), linear-gradient(90deg, rgba(0,0,0,.03), rgba(0,0,0,.1) 12%, rgba(0,0,0,0) 30%, rgba(0,0,0,.02) 50%, rgba(0,0,0,.2) 73.5%, rgba(0,0,0,.5) 75.25%, rgba(0,0,0,.15) 85.25%, rgba(0,0,0,0));
+}
+.book-rotate { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.group:hover .book-rotate,
+.group:focus-visible .book-rotate,
+.group:has(:focus-visible) .book-rotate { transform: rotateY(-24deg) translateX(-4%) scale(1.03); }
+
+/* ---------- กระจก (ใช้ทั้งเว็บ) ---------- */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, .62);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, .7);
+    box-shadow: 0 10px 30px -12px rgba(59,49,42, .25), inset 0 1px 0 rgba(255, 255, 255, .8);
+  }
+}
+.warm-blob { position: absolute; border-radius: 9999px; filter: blur(60px); pointer-events: none; }
+.lift { transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background-color .2s, box-shadow .2s; }
+.lift:hover { transform: translateY(-2px); }
+.lift:active { transform: translateY(1px); }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.floaty { animation: float 6s ease-in-out infinite; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.shimmer { background: linear-gradient(90deg, #F2F3EA 0%, #E8DCCF 45%, #F2F3EA 90%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+
+/* ---------- หนังสือ 3 มิติบนชั้น (components/home/ShelfBook.jsx) ---------- */
+.sb, .shelf-slot { --w: 140px; --d: 26px; }
+@media (min-width: 640px) { .sb, .shelf-slot { --w: 170px; --d: 30px; } }
+.sb.sb-big { --w: 200px; --d: 36px; }
+@media (min-width: 640px) { .sb.sb-big { --w: 230px; --d: 42px; } }
+.sb { display: block; perspective: 1300px; border-radius: 8px; }
+.sb-3d { position: relative; width: var(--w); margin: 0 auto; transform-style: preserve-3d;
+  transform: rotateY(-26deg) rotateX(3deg); transition: transform .7s cubic-bezier(.34, 1.45, .64, 1); }
+.sb-front { position: absolute; inset: 0; z-index: 2; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+  padding: 10% 9% 9% 14%; border-radius: 3px 8px 8px 3px; transform-origin: left center;
+  transition: transform .7s cubic-bezier(.34, 1.3, .64, 1); }
+.sb-front img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sb-front::before { content: ""; position: absolute; z-index: 1; inset: 0 auto 0 0; width: 10%;
+  background: linear-gradient(90deg, rgba(0,0,0,.08), rgba(0,0,0,.22) 40%, rgba(255,255,255,.18) 60%, rgba(0,0,0,.12) 85%, rgba(0,0,0,0)); }
+.sb-front::after { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 35%); }
+.sb-title { position: relative; font-family: Mitr, system-ui, sans-serif; font-size: calc(var(--w) * .11); line-height: 1.25;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.sb-author { position: relative; font-size: 12px; opacity: .85; }
+.sb-orn { position: relative; display: block; width: 20%; aspect-ratio: 1; border-radius: 9999px; border: 1.5px solid currentColor; opacity: .6; }
+.sb-inner { position: absolute; inset: 3px 3px 3px 0; z-index: 1; border-radius: 0 6px 6px 0; transform: translateZ(-1px);
+  background: repeating-linear-gradient(180deg, #FFFFFF 0 22px, #F2F3EA 22px 23px);
+  display: flex; align-items: center; justify-content: flex-end; padding-right: 8%; }
+.sb-inner span { font-family: Mitr, system-ui, sans-serif; font-size: 12px; color: #6E4E37; opacity: 0; transition: opacity .3s .15s; }
+.sb-pages { position: absolute; top: 4px; left: 0; height: calc(100% - 8px); width: var(--d);
+  background: repeating-linear-gradient(90deg, #FFFFFF 0 2px, #E8DCCF 2px 3px);
+  transform: translateX(calc(var(--w) - var(--d) / 2 - 3px)) rotateY(90deg) translateX(calc(var(--d) / 2)); }
+.sb-back { position: absolute; inset: 0; border-radius: 3px 8px 8px 3px; transform: translateZ(calc(-1 * var(--d))); }
+.sb-floor { display: block; width: 78%; height: 18px; margin: -2px auto 0; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(59,49,42,.32), rgba(59,49,42,0));
+  transition: transform .6s cubic-bezier(.34, 1.45, .64, 1), opacity .4s; }
+.sb:hover .sb-3d, .sb:focus-visible .sb-3d { transform: rotateY(-12deg) rotateX(4deg) translateY(-18px); }
+.sb:hover .sb-front, .sb:focus-visible .sb-front { transform: rotateY(-34deg); }
+.sb:hover .sb-inner span, .sb:focus-visible .sb-inner span { opacity: 1; }
+.sb:hover .sb-floor, .sb:focus-visible .sb-floor { transform: scale(.78); opacity: .55; }
+.sb:focus-visible { --tw-ring-offset-color: #FFFFFF; }
+
+/* ---------- ชั้นเลื่อน (components/home/BookShelfCarousel.jsx) ---------- */
+@keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+.shelf-track { display: flex; gap: 32px; margin: 0; padding: 56px 24px 20px; list-style: none;
+  transition: transform .75s cubic-bezier(.34, 1.25, .64, 1); touch-action: pan-y; }
+@media (min-width: 640px) { .shelf-track { gap: 48px; } }
+.shelf-slot { flex: 0 0 var(--w); width: var(--w); animation: rise .8s cubic-bezier(.34, 1.45, .64, 1) both; }
+.shelf-track.is-next .sb-3d { transform: rotateY(-50deg) rotateX(3deg); }
+.shelf-track.is-prev .sb-3d { transform: rotateY(6deg) rotateX(3deg); }
+.shelf-info { margin-top: 14px; text-align: center; transition: transform .4s cubic-bezier(.34, 1.45, .64, 1); }
+.shelf-slot:hover .shelf-info { transform: translateY(-6px); }
+.shelf-slot:hover h3 { color: #8A6448; }
+.shelf-nav { width: 48px; height: 48px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #3B312A;
+  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), opacity .2s; }
+.shelf-nav:hover:not(:disabled) { transform: scale(1.08); }
+.shelf-nav:active:not(:disabled) { transform: scale(.94); }
+.shelf-nav:disabled { opacity: .4; cursor: default; }
+.shelf-dot { width: 10px; height: 10px; border-radius: 9999px; background: #D9C4B0;
+  transition: width .45s cubic-bezier(.34, 1.56, .64, 1), background-color .3s; }
+.shelf-dot.is-on { width: 30px; background: #8A6448; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  .group:hover .book-rotate, .group:has(:focus-visible) .book-rotate { transform: none; }
 }
 
 /* หน้าแรก: ปกหนังสือค่อย ๆ ตั้งขึ้นบนชั้นครั้งเดียวตอนเปิดหน้า */

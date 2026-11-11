@@ -45,7 +45,7 @@ function Wishlist() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
-      <h1 className="font-serif text-3xl font-bold text-ink">รายการอยากอ่าน</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">รายการอยากอ่าน</h1>
       <p className="mt-1 text-sm text-ink-soft">
         ของ {user?.name}{status === 'success' && ` ${books.length} เล่ม`}
       </p>

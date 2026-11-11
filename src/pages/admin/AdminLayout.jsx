@@ -7,7 +7,7 @@ const tabClass = ({ isActive }) =>
 function AdminLayout() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-6">
-      <h1 className="font-serif text-2xl font-bold text-ink">หลังบ้าน</h1>
+      <h1 className="font-serif text-2xl font-medium text-ink">หลังบ้าน</h1>
       <nav className="mt-5 flex gap-6 overflow-x-auto border-b border-line" aria-label="เมนูหลังบ้าน">
         <NavLink to="/admin" end className={tabClass}>ภาพรวม</NavLink>
         <NavLink to="/admin/books" className={tabClass}>หนังสือ</NavLink>

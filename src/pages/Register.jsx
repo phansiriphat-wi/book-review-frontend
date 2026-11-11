@@ -30,7 +30,7 @@ function Register() {
 
   return (
     <div className="mx-auto max-w-sm px-4 py-16">
-      <h1 className="font-serif text-3xl font-bold text-ink">สมัครสมาชิก</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">สมัครสมาชิก</h1>
       <p className="mt-2 text-sm text-ink-soft">สมาชิกเขียนรีวิว ให้คะแนน และเก็บรายการหนังสือที่อยากอ่านได้</p>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>

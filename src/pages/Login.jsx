@@ -35,7 +35,7 @@ function Login() {
 
   return (
     <div className="mx-auto max-w-sm px-4 py-16">
-      <h1 className="font-serif text-3xl font-bold text-ink">เข้าสู่ระบบ</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">เข้าสู่ระบบ</h1>
       {reason && <p className="mt-3 rounded-md bg-gilt-light px-3 py-2 text-sm text-ink" role="status">{reason}</p>}
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">

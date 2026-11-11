@@ -24,7 +24,7 @@ function Account() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-12">
-      <h1 className="font-serif text-3xl font-bold text-ink">บัญชีของฉัน</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">บัญชีของฉัน</h1>
       <div className="mt-8">
         {status === 'loading' && <Loading />}
         {status === 'error' && <ErrorBox error={error} onRetry={() => setReloadKey(k => k + 1)} />}

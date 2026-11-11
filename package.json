@@ -4,6 +4,8 @@
   "private": true,
   "proxy": "http://localhost:8080",
   "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^6.30.6",
