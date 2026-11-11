@@ -1,0 +1,14 @@
+# dependencies
+/node_modules
+
+# production
+/build
+
+# ค่าตั้งค่าเฉพาะเครื่อง ห้ามขึ้น GitHub
+.env
+.env.local
+.env.*.local
+
+# misc
+.DS_Store
+npm-debug.log*
