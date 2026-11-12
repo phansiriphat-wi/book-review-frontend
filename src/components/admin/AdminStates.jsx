@@ -27,7 +27,7 @@ export function Notice({ children, tone = 'success' }) {
 }
 
 export const btnPrimary =
-  'inline-flex items-center justify-center rounded-md bg-cloth px-4 py-2 text-sm font-medium text-white hover:bg-cloth-dark disabled:cursor-not-allowed disabled:bg-ink-faint';
+  'inline-flex items-center justify-center rounded-md bg-cloth px-4 py-2 text-sm font-medium text-on-accent hover:bg-cloth-dark disabled:cursor-not-allowed disabled:bg-ink-faint';
 export const btnGhost =
   'inline-flex items-center justify-center rounded-md border border-line bg-white px-4 py-2 text-sm text-ink hover:border-cloth hover:text-cloth disabled:cursor-not-allowed disabled:opacity-50';
 export const btnDanger =
@@ -40,7 +40,7 @@ export const labelClass = 'mb-1 block text-sm font-medium text-ink';
 export function ConfirmBox({ open, title, children, confirmText = 'ยืนยัน', busy, onConfirm, onCancel }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/40 px-4" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 px-4" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
         <h2 id="confirm-title" className="text-lg font-semibold text-ink">{title}</h2>
         <div className="mt-2 text-sm text-ink-soft">{children}</div>

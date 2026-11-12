@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BookGrid from '../components/BookGrid';
 import BookCover from '../components/BookCover';
+import PeekBuddy from '../components/mascot/PeekBuddy';
 import BookShelfCarousel from '../components/home/BookShelfCarousel';
 import { listBooks } from '../api/backend';
 import { useCategories } from '../data/categories';
@@ -9,6 +10,7 @@ import { useCategories } from '../data/categories';
 const HERO_SIZE = 5;                                         // ชั้นปกจริงในส่วนหัว (แบบเดิม)
 const SHELF_SIZE = 15;                                       // รวมกับชั้น 3 มิติด้านล่าง
 const HERO_WIDTHS = ['w-[84%]', 'w-full', 'w-[78%]', 'w-[92%]', 'w-[82%]'];
+const PEEK_AT = 3;                                           // น้องบุ๊คแอบหลังเล่มที่ 4 (เห็นทั้งจอมือถือและจอใหญ่)
 
 // เล่มที่มีปกขึ้นชั้นก่อน เล่มไม่มีปกใช้ปกสำรอง
 export function pickShelf(books, size = SHELF_SIZE) {
@@ -73,9 +75,9 @@ function Home() {
 
   return (
     <div className="relative overflow-hidden font-warm text-cocoa">
-      <span aria-hidden="true" className="warm-blob -right-32 -top-40 h-[520px] w-[520px] bg-[#BBDCE5] opacity-75" />
-      <span aria-hidden="true" className="warm-blob -left-40 top-[380px] h-[420px] w-[420px] bg-[#ECEEDF] opacity-90" />
-      <span aria-hidden="true" className="warm-blob -right-36 top-[1200px] h-[460px] w-[460px] bg-[#D9C4B0] opacity-60" />
+      <span aria-hidden="true" className="warm-blob -right-32 -top-40 h-[520px] w-[520px] bg-sky opacity-75 dark:opacity-50" />
+      <span aria-hidden="true" className="warm-blob -left-40 top-[380px] h-[420px] w-[420px] bg-cream-deep opacity-90 dark:opacity-60" />
+      <span aria-hidden="true" className="warm-blob -right-36 top-[1200px] h-[460px] w-[460px] bg-latte opacity-60 dark:opacity-30" />
 
       {/* ส่วนหัว: ข้อความ + ค้นหา ซ้าย / ปกจริงยืนเรียงบนแผ่นไม้ ขวา (เลย์เอาต์เดิม โทนใหม่) */}
       <section className="relative border-b border-latte/70">
@@ -93,7 +95,7 @@ function Home() {
                      placeholder="เช่น Dune หรือ Agatha Christie"
                      className="min-h-12 min-w-0 flex-1 rounded-xl border-0 bg-white/60 px-4 text-base text-cocoa placeholder:text-cocoa-soft/80 focus:outline-none focus:ring-2 focus:ring-caramel/40" />
               <button type="submit"
-                      className="lift min-h-12 rounded-xl bg-caramel px-5 font-semibold text-white shadow-[0_8px_18px_-8px_rgba(138,100,72,.7)] hover:bg-caramel-dark">
+                      className="lift min-h-12 rounded-xl bg-caramel px-5 font-semibold text-on-accent shadow-[0_8px_18px_-8px_rgba(138,100,72,.7)] hover:bg-caramel-dark">
                 ค้นหา
               </button>
             </form>
@@ -102,18 +104,21 @@ function Home() {
           <div className="self-end" aria-label="หนังสือแนะนำ">
             <div className="grid grid-cols-4 items-end gap-3 px-2 sm:grid-cols-5 md:gap-5">
               {(hero.length ? hero : Array.from({ length: HERO_SIZE }, (_, i) => ({ id: `ph${i}` }))).map((b, i) => (
-                <Link key={b.id} to={b.title ? `/books/${b.id}` : '/books'}
-                      tabIndex={b.title ? 0 : -1} aria-hidden={b.title ? undefined : true}
-                      className={'shelf-in group mx-auto block ' + HERO_WIDTHS[i] + (i === HERO_SIZE - 1 ? ' hidden sm:block' : '')}
-                      style={{ animationDelay: `${i * 70}ms` }}>
-                  {b.title
-                    ? <BookCover src={b.coverUrl} title={b.title}
-                                 className="origin-bottom transition-transform duration-300 group-hover:-translate-y-2 group-hover:-rotate-2" />
-                    : <div className={'aspect-[2/3] rounded-[3px] ' + (shelfStatus === 'loading' ? 'shimmer' : 'bg-latte/40')} />}
-                </Link>
+                <div key={b.id} className={'relative mx-auto ' + HERO_WIDTHS[i] + (i === HERO_SIZE - 1 ? ' hidden sm:block' : '')}>
+                  {i === PEEK_AT && <PeekBuddy />}
+                  <Link to={b.title ? `/books/${b.id}` : '/books'}
+                        tabIndex={b.title ? 0 : -1} aria-hidden={b.title ? undefined : true}
+                        className="shelf-in group relative z-10 block"
+                        style={{ animationDelay: `${i * 70}ms` }}>
+                    {b.title
+                      ? <BookCover src={b.coverUrl} title={b.title}
+                                   className="origin-bottom transition-transform duration-300 group-hover:-translate-y-2 group-hover:-rotate-2" />
+                      : <div className={'aspect-[2/3] rounded-[3px] ' + (shelfStatus === 'loading' ? 'shimmer' : 'bg-latte/40')} />}
+                  </Link>
+                </div>
               ))}
             </div>
-            <div className="h-3 rounded-t-sm bg-[#B48A68] shadow-[0_6px_10px_-4px_rgba(59,49,42,.45)]" />
+            <div className="h-3 rounded-t-sm bg-caramel-wood shadow-[0_6px_10px_-4px_rgba(59,49,42,.45)]" />
           </div>
         </div>
       </section>

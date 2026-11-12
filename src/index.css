@@ -2,14 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-white text-ink antialiased;
-  background-image:
-    radial-gradient(40rem 40rem at 100% -10%, rgba(187, 220, 229, .55), transparent 70%),
-    radial-gradient(34rem 34rem at -10% 45%, rgba(236, 238, 223, .9), transparent 70%),
-    radial-gradient(36rem 36rem at 110% 95%, rgba(217, 196, 176, .45), transparent 70%);
+/* ---------- สีทั้งเว็บ (tailwind.config.js อ่านค่าจากตรงนี้) ค่าเป็น "R G B" ---------- */
+:root {
+  color-scheme: light;
+  --page: 255 255 255;        --surface: 255 255 255;    --paper-shade: 246 247 239;
+  --ink: 59 49 42;            --ink-soft: 107 91 78;     --ink-faint: 119 102 86;
+  --cloth: 138 100 72;        --cloth-dark: 110 78 55;   --cloth-light: 243 235 227;
+  --on-accent: 255 255 255;
+  --gilt: 201 150 95;         --gilt-light: 245 235 221;
+  --line: 232 220 207;
+  --sky: 187 220 229;         --sky-light: 230 242 245;  --sky-deep: 143 191 204;
+  --cream: 251 251 246;       --cream-deep: 236 238 223;
+  --latte: 217 196 176;       --latte-deep: 207 171 141; --wood: 180 138 104;
+  --shadow: 59 49 42;
+  --glow-1: rgba(187, 220, 229, .55); --glow-2: rgba(236, 238, 223, .9); --glow-3: rgba(217, 196, 176, .45);
 }
-::selection { background: #BBDCE5; color: #3B312A; }
+/* โหมดมืด: ห้องสมุดตอนกลางคืน พื้นกาแฟเข้ม ตัวอักษรครีม ปุ่มคาราเมลสว่าง */
+.dark {
+  color-scheme: dark;
+  --page: 23 18 15;           --surface: 36 28 23;       --paper-shade: 46 36 29;
+  --ink: 242 232 220;         --ink-soft: 205 187 168;   --ink-faint: 168 147 127;
+  --cloth: 217 167 124;       --cloth-dark: 234 192 152; --cloth-light: 58 44 34;
+  --on-accent: 30 22 17;
+  --gilt: 224 176 116;        --gilt-light: 59 46 31;
+  --line: 74 59 48;
+  --sky: 53 82 91;            --sky-light: 34 52 58;     --sky-deep: 93 140 153;
+  --cream: 23 18 15;          --cream-deep: 42 36 32;
+  --latte: 107 85 68;         --latte-deep: 138 107 84;  --wood: 122 90 67;
+  --shadow: 0 0 0;
+  --glow-1: rgba(93, 140, 153, .22); --glow-2: rgba(122, 90, 67, .18); --glow-3: rgba(217, 167, 124, .12);
+}
+
+body {
+  @apply text-ink antialiased;
+  background-color: rgb(var(--page));
+  background-image:
+    radial-gradient(40rem 40rem at 100% -10%, var(--glow-1), transparent 70%),
+    radial-gradient(34rem 34rem at -10% 45%, var(--glow-2), transparent 70%),
+    radial-gradient(36rem 36rem at 110% 95%, var(--glow-3), transparent 70%);
+  transition: background-color .3s, color .3s;
+}
+::selection { background: rgb(var(--sky)); color: rgb(var(--ink)); }
 
 /* วงโฟกัสเห็นชัดเวลาใช้คีย์บอร์ด */
 :focus-visible {
@@ -28,11 +61,15 @@ body {
 /* ---------- กระจก (ใช้ทั้งเว็บ) ---------- */
 @layer components {
   .glass {
-    background: rgba(255, 255, 255, .7);
+    background: rgb(var(--surface) / .7);
     -webkit-backdrop-filter: blur(18px) saturate(140%);
     backdrop-filter: blur(18px) saturate(140%);
-    border: 1px solid rgba(180, 138, 104, .32);          /* ขอบน้ำตาลอ่อน ให้แยกจากพื้นหลังขาว */
-    box-shadow: 0 12px 32px -14px rgba(59,49,42, .35), 0 2px 6px -2px rgba(59,49,42, .08), inset 0 1px 0 rgba(255, 255, 255, .9);
+    border: 1px solid rgb(var(--wood) / .32);            /* ขอบน้ำตาลอ่อน ให้แยกจากพื้นหลัง */
+    box-shadow: 0 12px 32px -14px rgb(var(--shadow) / .35), 0 2px 6px -2px rgb(var(--shadow) / .08), inset 0 1px 0 rgb(255 255 255 / .9);
+  }
+  .dark .glass {
+    border-color: rgb(var(--wood) / .55);
+    box-shadow: 0 14px 36px -14px rgb(0 0 0 / .7), inset 0 1px 0 rgb(255 255 255 / .06);
   }
 }
 .warm-blob { position: absolute; border-radius: 9999px; filter: blur(60px); pointer-events: none; }
@@ -42,7 +79,7 @@ body {
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 .floaty { animation: float 6s ease-in-out infinite; }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-.shimmer { background: linear-gradient(90deg, #F2F3EA 0%, #E8DCCF 45%, #F2F3EA 90%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.shimmer { background: linear-gradient(90deg, rgb(var(--paper-shade)) 0%, rgb(var(--line)) 45%, rgb(var(--paper-shade)) 90%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 
 /* ---------- หนังสือ 3 มิติบนชั้น (components/home/ShelfBook.jsx) ---------- */
 .sb, .shelf-slot { --w: 140px; --d: 26px; }
@@ -73,13 +110,13 @@ body {
   transform: translateX(calc(var(--w) - var(--d) / 2 - 3px)) rotateY(90deg) translateX(calc(var(--d) / 2)); }
 .sb-back { position: absolute; inset: 0; border-radius: 3px 8px 8px 3px; transform: translateZ(calc(-1 * var(--d))); }
 .sb-floor { display: block; width: 78%; height: 18px; margin: -2px auto 0; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(59,49,42,.32), rgba(59,49,42,0));
+  background: radial-gradient(closest-side, rgb(var(--shadow) / .32), rgb(var(--shadow) / 0));
   transition: transform .6s cubic-bezier(.34, 1.45, .64, 1), opacity .4s; }
 .sb:hover .sb-3d, .sb:focus-visible .sb-3d { transform: rotateY(-12deg) rotateX(4deg) translateY(-18px); }
 .sb:hover .sb-front, .sb:focus-visible .sb-front { transform: rotateY(-34deg); }
 .sb:hover .sb-inner span, .sb:focus-visible .sb-inner span { opacity: 1; }
 .sb:hover .sb-floor, .sb:focus-visible .sb-floor { transform: scale(.78); opacity: .55; }
-.sb:focus-visible { --tw-ring-offset-color: #FFFFFF; }
+.sb:focus-visible { --tw-ring-offset-color: rgb(var(--surface)); }
 
 /* ---------- ชั้นเลื่อน (components/home/BookShelfCarousel.jsx) ---------- */
 @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
@@ -91,15 +128,15 @@ body {
 .shelf-track.is-prev .sb-3d { transform: rotateY(6deg) rotateX(3deg); }
 .shelf-info { margin-top: 14px; text-align: center; transition: transform .4s cubic-bezier(.34, 1.45, .64, 1); }
 .shelf-slot:hover .shelf-info { transform: translateY(-6px); }
-.shelf-slot:hover h3 { color: #8A6448; }
-.shelf-nav { width: 48px; height: 48px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #3B312A;
+.shelf-slot:hover h3 { color: rgb(var(--cloth)); }
+.shelf-nav { width: 48px; height: 48px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: rgb(var(--ink));
   transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), opacity .2s; }
 .shelf-nav:hover:not(:disabled) { transform: scale(1.08); }
 .shelf-nav:active:not(:disabled) { transform: scale(.94); }
 .shelf-nav:disabled { opacity: .4; cursor: default; }
-.shelf-dot { width: 10px; height: 10px; border-radius: 9999px; background: #D9C4B0;
+.shelf-dot { width: 10px; height: 10px; border-radius: 9999px; background: rgb(var(--latte));
   transition: width .45s cubic-bezier(.34, 1.56, .64, 1), background-color .3s; }
-.shelf-dot.is-on { width: 30px; background: #8A6448; }
+.shelf-dot.is-on { width: 30px; background: rgb(var(--cloth)); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -112,3 +149,62 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .shelf-in { animation: shelf-in .5s ease-out both; }
+
+/* ข้อความแจ้งข้อผิดพลาด (สีแดงของ Tailwind) ให้อ่านออกบนพื้นมืด */
+.dark .text-red-600, .dark .text-red-700, .dark .text-red-800 { color: #F4A79D; }
+.dark .bg-red-50 { background-color: rgb(127 29 29 / .28); }
+.dark .border-red-200, .dark .border-red-300, .dark .border-red-400 { border-color: rgb(248 113 113 / .45); }
+.dark .hover\:bg-red-50:hover, .dark .hover\:bg-red-100:hover { background-color: rgb(127 29 29 / .45); }
+.dark .hover\:text-red-700:hover { color: #F8C1B9; }
+
+/* ปุ่มสลับโหมด */
+.theme-icon { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .25s; }
+.theme-icon.is-off { opacity: 0; transform: rotate(-90deg) scale(.4); }
+
+/* ---------- น้องบุ๊ค (components/mascot) ---------- */
+.buddy { overflow: visible; }
+.dark .buddy-limb { stroke: #E9D8C4; }   /* แขนขาสีเข้มจะหายไปบนพื้นมืด */
+.dark .buddy-foot { fill: #E9D8C4; }
+.buddy-arm { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.buddy-arm-r.is-waving { animation: buddy-wave .6s ease-in-out 4 alternate; }
+@keyframes buddy-wave {
+  from { transform: translate(158px, 128px) rotate(150deg); }
+  to   { transform: translate(158px, 128px) rotate(110deg); }
+}
+.buddy-face { transition: transform .2s ease-out; }
+.buddy-eye { transform-box: fill-box; transform-origin: center; animation: buddy-blink 4.5s infinite; }
+@keyframes buddy-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+.buddy-brows { transition: transform .3s; }
+.buddy-brows.mood-wow { transform: translateY(-5px); }
+.buddy-brows.mood-oops { transform: translateY(2px); }
+.buddy-ribbon { transform-box: fill-box; transform-origin: 50% 100%; animation: buddy-ribbon 3s ease-in-out infinite; }
+@keyframes buddy-ribbon { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+.bob { animation: bob 3.2s ease-in-out infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* ของลอยไปมาบนเวทีหน้า login / register */
+.drift { position: absolute; animation: drift var(--t, 7s) ease-in-out var(--d, 0s) infinite; }
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) rotate(var(--r, 0deg)); }
+  50%      { transform: translate(var(--x, 6px), var(--y, -14px)) rotate(calc(var(--r, 0deg) + 12deg)); }
+}
+
+/* หน้าแรก: น้องบุ๊คแอบหลังหนังสือแล้วโผล่มา "จ๊ะเอ๋" */
+.peek-buddy { position: absolute; left: -4%; right: -4%; bottom: 4%; z-index: 0; cursor: pointer;
+  animation: peek 9s cubic-bezier(.34, 1.4, .64, 1) 1.5s infinite; }
+@keyframes peek {
+  0%, 38%   { transform: translateY(0); }
+  46%       { transform: translateY(-114%); }
+  50%, 76%  { transform: translateY(-108%); }
+  84%, 100% { transform: translateY(0); }
+}
+.peek-bubble, .peek-hands { opacity: 0; animation: peek-show 9s ease 1.5s infinite; }
+@keyframes peek-show { 0%, 47% { opacity: 0; } 51%, 75% { opacity: 1; } 79%, 100% { opacity: 0; } }
+.peek-bubble { position: absolute; right: 74%; top: 2%; white-space: nowrap; transform-origin: 100% 100%; }
+.peek-buddy.is-pop { animation: none; transform: translateY(-124%); transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.peek-buddy.is-pop .peek-bubble { animation: none; opacity: 1; }
+.peek-wrap.is-pop .peek-hands { animation: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .peek-buddy { transform: translateY(-108%); }
+  .peek-bubble, .peek-hands { opacity: 1; }
+}

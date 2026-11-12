@@ -12,6 +12,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Nunito:wght@400;600;700&family=Noto+Sans+Thai+Looped:wght@400;500;600&display=swap" rel="stylesheet" />
     <title>Book Review</title>
+    <script>
+      // ใส่ class="dark" ก่อน React โหลด กันจอกะพริบสีขาวตอนเปิดหน้า (ค่าเดียวกับ src/theme/ThemeContext.jsx)
+      try {
+        var saved = localStorage.getItem('bookreview.theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <noscript>ต้องเปิด JavaScript เพื่อใช้งานเว็บนี้</noscript>

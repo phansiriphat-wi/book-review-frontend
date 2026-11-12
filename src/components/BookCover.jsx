@@ -14,7 +14,7 @@ function BookCover({ src, title, className = '', size = 'md' }) {
     <div role="img" aria-label={`ปกหนังสือ ${title}`}
          className={'flex aspect-[2/3] w-full flex-col justify-between rounded-[3px] bg-cloth p-3 text-left shadow-cover ' + className}>
       <span className="h-px w-8 bg-gilt" />
-      <span className={'line-clamp-4 font-serif font-semibold leading-snug text-white ' + (size === 'lg' ? 'text-xl' : 'text-sm')}>
+      <span className={'line-clamp-4 font-serif font-semibold leading-snug text-on-accent ' + (size === 'lg' ? 'text-xl' : 'text-sm')}>
         {title}
       </span>
       <span className="h-px w-8 bg-gilt" />

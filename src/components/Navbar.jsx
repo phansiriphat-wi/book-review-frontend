@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import ThemeToggle from './ThemeToggle';
 
 // ลิงก์เมนูทรงเม็ดยา: หน้าที่เปิดอยู่เป็นเม็ดสีโกโก้เข้ม ตัวอักษรครีม
 const linkClass = ({ isActive }) =>
@@ -46,7 +47,7 @@ function Navbar() {
     <>
       <Link to="/login" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 text-[15px] text-ink-soft hover:bg-latte/30 hover:text-cloth-dark">เข้าสู่ระบบ</Link>
       <Link to="/register" onClick={() => setOpen(false)}
-            className="lift inline-flex min-h-11 items-center rounded-xl bg-cloth px-4 text-[15px] font-semibold text-white shadow-[0_8px_18px_-8px_rgba(138,100,72,.7)] hover:bg-cloth-dark">
+            className="lift inline-flex min-h-11 items-center rounded-xl bg-cloth px-4 text-[15px] font-semibold text-on-accent shadow-[0_8px_18px_-8px_rgba(138,100,72,.7)] hover:bg-cloth-dark">
         สมัครสมาชิก
       </Link>
     </>
@@ -72,9 +73,11 @@ function Navbar() {
                    placeholder="ค้นชื่อหนังสือหรือผู้แต่ง"
                    className="min-h-10 w-full rounded-xl border border-latte/80 bg-white/70 px-3.5 text-sm placeholder:text-ink-faint focus:border-cloth/50 focus:bg-white/80 focus:outline-none" />
           </form>
+          <ThemeToggle className="hidden md:grid" />
           <div className="hidden items-center gap-1 md:flex">{account}</div>
 
-          <button className="ml-auto min-h-11 rounded-xl border border-latte/80 bg-white/70 px-4 text-sm font-medium md:hidden"
+          <ThemeToggle className="ml-auto h-11 w-11 md:hidden" />
+          <button className="min-h-11 rounded-xl border border-latte/80 bg-white/70 px-4 text-sm font-medium md:hidden"
                   aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(o => !o)}>
             {open ? 'ปิดเมนู' : 'เมนู'}
           </button>

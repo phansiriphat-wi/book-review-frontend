@@ -115,7 +115,7 @@ function BookDetail() {
         <p className="mt-2 text-sm text-ink-soft">{error?.message}</p>
         <div className="mt-6 flex justify-center gap-4 text-sm">
           <button onClick={() => setReloadBook(k => k + 1)}
-            className="rounded-md bg-cloth px-4 py-2 font-medium text-white hover:bg-cloth-dark">ลองใหม่</button>
+            className="rounded-md bg-cloth px-4 py-2 font-medium text-on-accent hover:bg-cloth-dark">ลองใหม่</button>
           <Link to="/books" className="self-center text-cloth hover:underline">กลับไปหน้าหนังสือ</Link>
         </div>
       </div>
@@ -184,7 +184,7 @@ function BookDetail() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-ink-soft">เข้าสู่ระบบเพื่อให้คะแนนและเขียนรีวิวเล่มนี้</p>
               <button onClick={() => navigate('/login', { state: { from: location.pathname, reason: 'review' } })}
-                className="rounded-md bg-cloth px-4 py-2 text-sm font-medium text-white hover:bg-cloth-dark">
+                className="rounded-md bg-cloth px-4 py-2 text-sm font-medium text-on-accent hover:bg-cloth-dark">
                 เข้าสู่ระบบเพื่อรีวิว
               </button>
             </div>

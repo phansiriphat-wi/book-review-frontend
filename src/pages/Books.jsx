@@ -82,7 +82,7 @@ function Books() {
           <input id="books-search" type="search" value={draft} onChange={(e) => setDraft(e.target.value)}
             placeholder="ค้นชื่อหนังสือหรือผู้แต่ง"
             className="min-w-0 flex-1 rounded-md border border-line bg-white px-3 py-2 placeholder:text-ink-faint focus:border-cloth focus:outline-none focus:ring-2 focus:ring-cloth/20" />
-          <button type="submit" className="rounded-md bg-cloth px-4 py-2 text-sm font-medium text-white hover:bg-cloth-dark">ค้นหา</button>
+          <button type="submit" className="rounded-md bg-cloth px-4 py-2 text-sm font-medium text-on-accent hover:bg-cloth-dark">ค้นหา</button>
         </form>
       </div>
 

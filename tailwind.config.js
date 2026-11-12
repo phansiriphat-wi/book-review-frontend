@@ -1,26 +1,34 @@
+// ใช้ตัวแปร CSS แบบ "R G B" เพื่อให้ bg-ink/40 (ความโปร่ง) ยังใช้ได้
+const c = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{js,jsx}'],
+  darkMode: 'class',                                    // <html class="dark"> = โหมดมืด (ThemeContext สลับให้)
   theme: {
     extend: {
       // สีของ Book Review ตาม palette colorhunt BBDCE5 / ECEEDF / D9C4B0 / CFAB8D + ขาว
       // ชื่อโทเคนเดิม (ทุกหน้าใช้อยู่) เปลี่ยนแค่ค่า:
       //   ink = ตัวอักษรน้ำตาลเข้ม, cloth = น้ำตาลแทนเข้ม (ปุ่ม/ลิงก์), gilt = ดาว, paper = ขาว, line = เส้นเบจ, sky = ฟ้าพาสเทล
       // (สีใน palette อ่อนเกินจะใช้เป็นตัวอักษร จึงเพิ่มเฉดเข้มที่มาจาก #CFAB8D ไว้สำหรับตัวอักษรและปุ่ม)
+      // สีทุกตัวอ่านจากตัวแปร CSS ใน index.css (:root = โหมดสว่าง, .dark = โหมดมืด)
+      // หน้าไหนใช้ text-ink / bg-white ฯลฯ ก็เปลี่ยนตามโหมดเองโดยไม่ต้องเขียน dark: ทุกที่
       colors: {
-        white: '#FFFFFF',
-        ink: { DEFAULT: '#3B312A', soft: '#6B5B4E', faint: '#776656' },
-        cloth: { DEFAULT: '#8A6448', dark: '#6E4E37', light: '#F3EBE3' },
-        gilt: { DEFAULT: '#C9965F', light: '#F5EBDD' },
-        paper: { DEFAULT: '#FFFFFF', shade: '#F6F7EF' },
-        line: '#E8DCCF',
-        sky: { DEFAULT: '#BBDCE5', light: '#E6F2F5', deep: '#8FBFCC' },
+        white: c('surface'),                            // พื้นการ์ด/ช่องกรอก (โหมดมืด = น้ำตาลเข้ม)
+        page: c('page'),                                // พื้นหลังทั้งหน้า
+        'on-accent': c('on-accent'),                    // ตัวอักษรบนปุ่มสีน้ำตาล
+        ink: { DEFAULT: c('ink'), soft: c('ink-soft'), faint: c('ink-faint') },
+        cloth: { DEFAULT: c('cloth'), dark: c('cloth-dark'), light: c('cloth-light') },
+        gilt: { DEFAULT: c('gilt'), light: c('gilt-light') },
+        paper: { DEFAULT: c('surface'), shade: c('paper-shade') },
+        line: c('line'),
+        sky: { DEFAULT: c('sky'), light: c('sky-light'), deep: c('sky-deep') },
         // ชื่อที่หน้าแรกใช้
-        cream: { DEFAULT: '#FBFBF6', deep: '#ECEEDF' },
-        latte: { DEFAULT: '#D9C4B0', deep: '#CFAB8D' },
-        caramel: { DEFAULT: '#8A6448', dark: '#6E4E37', wood: '#B48A68' },
-        cocoa: { DEFAULT: '#3B312A', soft: '#6B5B4E' },
-        honey: '#C9965F',
+        cream: { DEFAULT: c('cream'), deep: c('cream-deep') },
+        latte: { DEFAULT: c('latte'), deep: c('latte-deep') },
+        caramel: { DEFAULT: c('cloth'), dark: c('cloth-dark'), wood: c('wood') },
+        cocoa: { DEFAULT: c('ink'), soft: c('ink-soft') },
+        honey: c('gilt'),
       },
       fontFamily: {
         // เนื้อหา: Nunito (อังกฤษ) + Noto Sans Thai Looped (ไทย มีหัว อ่านง่าย) / หัวข้อ: Mitr กลมมน
