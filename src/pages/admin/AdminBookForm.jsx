@@ -2,18 +2,16 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { createBook, deleteBook, getAdminBook, updateBook } from '../../api/backend';
-import { getBook as getOpenLibraryBook, searchBooks } from '../../api/openlibrary';
 import { ErrorBox, Loading, ConfirmBox, btnPrimary, btnGhost, btnDanger, inputClass, labelClass } from '../../components/admin/AdminStates';
 import BookCover from '../../components/BookCover';
 import { useCategories } from '../../data/categories';
 
-// ฟอร์มเดียวใช้ 2 โหมด: ไม่มี :id = เพิ่มหนังสือใหม่, มี :id = แก้ไข (โหลดค่าเดิมมาใส่ก่อน) แบบ AdminMovieForm
-// ฟอร์มเช็กข้อมูลชั้นแรกให้ผู้ใช้เห็นเร็ว แต่ Go เช็กซ้ำทุกครั้ง เพราะฟอร์มนี้ข้ามได้ด้วย curl
+
 
 const EMPTY = { title: '', author: '', category: '', description: '', coverUrl: '', publishedYear: '', openlibraryKey: '' };
 const THIS_YEAR = new Date().getFullYear();
 
-// ลิงก์รูปปก: กติกาเดียวกับ Go (url.Parse แล้ว scheme ต้องเป็น https มี host และยาวไม่เกิน 500)
+
 export function isHttpsUrl(value) {
   const v = String(value ?? '').trim();
   if (!v || v.length > 500) return false;
@@ -25,7 +23,6 @@ export function isHttpsUrl(value) {
   }
 }
 
-// กติกาเดียวกับ validateBook ใน Go (handler/validate.go)
 export function validate(f) {
   const errs = {};
   if (!f.title.trim()) errs.title = 'ต้องมีชื่อหนังสือ';
@@ -54,73 +51,6 @@ function toPayload(f) {
     publishedYear: f.publishedYear === '' ? null : Number(f.publishedYear),
     openlibraryKey: nz(f.openlibraryKey),
   };
-}
-
-// กล่องค้น Open Library เพื่อกรอกฟอร์มอัตโนมัติ
-function OpenLibraryPicker({ onPick }) {
-  const [q, setQ] = useState('');
-  const [results, setResults] = useState([]);
-  const [status, setStatus] = useState('idle');         // 'idle' | 'loading' | 'success' | 'error'
-  const [error, setError] = useState(null);
-  const [picking, setPicking] = useState(null);
-
-  async function search(e) {
-    e.preventDefault();
-    if (!q.trim()) return;
-    setStatus('loading');
-    try {
-      const data = await searchBooks(q.trim(), 1);
-      setResults(data.items.slice(0, 8));
-      setStatus('success');
-    } catch (err) {
-      setError(err);
-      setStatus('error');
-    }
-  }
-
-  async function pick(b) {
-    setPicking(b.id);
-    try {
-      const full = await getOpenLibraryBook(b.id).catch(() => b);   // ได้เรื่องย่อ ถ้าพลาดใช้ข้อมูลจากผลค้นหา
-      onPick({ ...b, ...full, author: b.author !== 'ไม่ทราบผู้แต่ง' ? b.author : full.author,
-               publishedYear: b.publishedYear ?? full.publishedYear, coverUrl: full.coverUrl ?? b.coverUrl });
-    } finally {
-      setPicking(null);
-    }
-  }
-
-  return (
-    <div className="rounded-lg border border-line bg-paper-shade p-4">
-      <p className="text-sm font-medium text-ink">กรอกจาก Open Library</p>
-      <p className="text-xs text-ink-soft">ค้นแล้วเลือกเล่ม ระบบจะเติมชื่อ ผู้แต่ง ปี ปก และเรื่องย่อให้ แก้ต่อได้ก่อนบันทึก</p>
-      <form onSubmit={search} className="mt-3 flex gap-2" role="search">
-        <label htmlFor="ol-picker" className="sr-only">ค้นใน Open Library</label>
-        <input id="ol-picker" type="search" value={q} onChange={(e) => setQ(e.target.value)}
-               placeholder="ชื่อหนังสือหรือผู้แต่ง" className={inputClass} />
-        <button type="submit" className={btnGhost} disabled={status === 'loading'}>ค้นหา</button>
-      </form>
-      {status === 'loading' && <p className="mt-3 text-sm text-ink-faint">กำลังค้นหา...</p>}
-      {status === 'error' && <p className="mt-3 text-sm text-red-700">{error.message}</p>}
-      {status === 'success' && results.length === 0 && <p className="mt-3 text-sm text-ink-faint">ไม่พบหนังสือ ลองคำอื่น</p>}
-      {results.length > 0 && status === 'success' && (
-        <ul className="mt-3 max-h-72 divide-y divide-line overflow-y-auto rounded-md border border-line bg-white">
-          {results.map(b => (
-            <li key={b.id}>
-              <button type="button" onClick={() => pick(b)} disabled={picking !== null}
-                      className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-paper-shade disabled:opacity-60">
-                <div className="w-8 shrink-0"><BookCover src={b.coverUrl} title={b.title} /></div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-ink">{b.title}</p>
-                  <p className="truncate text-xs text-ink-soft">{b.author}{b.publishedYear && `, ${b.publishedYear}`}</p>
-                </div>
-                <span className="text-xs text-cloth">{picking === b.id ? 'กำลังดึง...' : 'เลือก'}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
 }
 
 function AdminBookForm() {
@@ -159,25 +89,12 @@ function AdminBookForm() {
     return () => { ignore = true; };
   }, [id, isEdit, token]);
 
-  // ช่องเดียวเปลี่ยน ก็สร้าง object ใหม่ที่ก็อปของเดิมแล้วทับช่องนั้น (ไม่แก้ state ตรง ๆ)
+
   function set(field) {
     return (e) => {
       setForm({ ...form, [field]: e.target.value });
       if (errors[field]) setErrors({ ...errors, [field]: undefined });
     };
-  }
-
-  function fillFromOpenLibrary(b) {
-    setForm(f => ({
-      ...f,
-      title: b.title ?? f.title,
-      author: b.author && b.author !== 'ไม่ทราบผู้แต่ง' ? b.author : f.author,
-      description: b.description ?? f.description,
-      coverUrl: b.coverUrl ?? f.coverUrl,
-      publishedYear: b.publishedYear != null ? String(b.publishedYear) : f.publishedYear,
-      openlibraryKey: b.openlibraryKey ?? f.openlibraryKey,
-    }));
-    setErrors({});
   }
 
   async function handleSubmit(e) {
@@ -226,8 +143,6 @@ function AdminBookForm() {
           <Link to="/admin/books" className="text-sm text-ink-soft hover:text-cloth">กลับไปรายการ</Link>
         </div>
 
-        {/* อยู่นอกฟอร์มหนังสือ เพราะกล่องค้นหาเป็น <form> ของตัวเอง (ซ้อน form ไม่ได้) */}
-        {!isEdit && <OpenLibraryPicker onPick={fillFromOpenLibrary} />}
 
         <form onSubmit={handleSubmit} noValidate className="space-y-5" aria-label={isEdit ? 'แก้ไขหนังสือ' : 'เพิ่มหนังสือ'}>
           <div>

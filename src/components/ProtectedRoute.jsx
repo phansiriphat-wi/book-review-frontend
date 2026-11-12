@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
-// ครอบหน้าที่ต้อง login: ถ้ายังไม่ได้ login ส่งไปหน้า /login แล้วจำไว้ว่ามาจากไหน (เหมือน MovieHub)
+// ครอบหน้าที่ต้อง login: ถ้ายังไม่ได้ login ส่งไปหน้า /login แล้วจำไว้ว่ามาจากไหน
 function ProtectedRoute({ children }) {
   const { isLoggedIn } = useAuth();
   const location = useLocation();

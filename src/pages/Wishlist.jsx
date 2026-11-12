@@ -4,7 +4,6 @@ import BookGrid from '../components/BookGrid';
 import { useAuth } from '../auth/AuthContext';
 import { getWishlist, removeFromWishlist } from '../api/backend';
 
-// หน้า "รายการอยากอ่าน" (เส้นทาง /me/wishlist ครอบด้วย ProtectedRoute แล้ว)
 function Wishlist() {
   const { token, user } = useAuth();
   const [books, setBooks] = useState([]);

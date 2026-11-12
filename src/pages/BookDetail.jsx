@@ -6,27 +6,21 @@ import ReviewForm from '../components/ReviewForm';
 import ReviewList from '../components/ReviewList';
 import { StarDisplay } from '../components/StarRating';
 import { useAuth } from '../auth/AuthContext';
-import { getBook as getOpenLibraryBook, KEY_PATTERN } from '../api/openlibrary';
 import { deleteReview, getBook, getReviews, postReview, updateReview } from '../api/backend';
 import { categoryLabel, useCategories } from '../data/categories';
 
-// /books/:id  id = เลขในระบบ (เช่น 15) หรือรหัส Open Library (เช่น OL27448W)
-// 1) ถามระบบเราก่อน (มีหมวด คะแนน และข้อมูลที่ admin แก้แล้ว)
-//    รหัส Open Library ถามผ่าน GET /api/books/{key}/reviews ซึ่งตอบ 200 เสมอ (bookId = null ถ้ายังไม่มีในระบบ)
-//    จึงไม่มี 404 สีแดงใน console ตอนเปิดหนังสือที่ยังไม่มีใครรีวิว
-// 2) ถ้าเป็นหนังสือ Open Library ที่ยังไม่มีในระบบ อ่านจาก Open Library แทน รีวิวครั้งแรกจะบันทึกเข้าระบบให้เอง
+
 function BookDetail() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoggedIn, token, user } = useAuth();
   const categories = useCategories();
-  const isOpenLibrary = KEY_PATTERN.test(id);
-  const yearHint = location.state?.publishedYear ?? null;   // ปีจากการ์ดที่กดมา
 
   const [book, setBook] = useState(null);
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState(null);
+  const [reloadBook, setReloadBook] = useState(0);
   const [reviews, setReviews] = useState({ items: [], avgRating: null, reviewCount: 0 });
   const [reviewStatus, setReviewStatus] = useState('loading');
   const [reviewError, setReviewError] = useState(null);
@@ -39,26 +33,18 @@ function BookDetail() {
     async function load() {
       setStatus('loading');
       try {
-        let b;
-        if (!isOpenLibrary) {
-          b = await getBook(id);
-        } else {
-          // backend ยังไม่ตื่นก็ไม่เป็นไร หนังสือ Open Library ยังเปิดดูได้
-          const { bookId } = await getReviews(id).catch(() => ({ bookId: null }));
-          b = bookId
-            ? await getBook(bookId).catch(() => getOpenLibraryBook(id))
-            : await getOpenLibraryBook(id);
-          // works ของ Open Library มักไม่มีปี ใช้ปีจากผลค้นหาที่การ์ดส่งมาแทน
-          if (b.publishedYear == null && yearHint) b = { ...b, publishedYear: yearHint };
-        }
+        const b = await getBook(id);
         if (!ignore) { setBook(b); setStatus('success'); }
       } catch (err) {
-        if (!ignore) { setError(err); setStatus('error'); }
+        if (ignore) return;
+        setError(err);
+        // 404/400 = ไม่มีเล่มนี้หรือลิงก์ผิด, อย่างอื่น (เน็ตหลุด / server ยังไม่ตื่น) ให้ลองใหม่ได้
+        setStatus(err.status === 404 || err.status === 400 ? 'notfound' : 'error');
       }
     }
     load();
     return () => { ignore = true; };
-  }, [id, isOpenLibrary, yearHint]);                    // id เปลี่ยน = โหลดเล่มใหม่
+  }, [id, reloadBook]);                    // id เปลี่ยน = โหลดเล่มใหม่
 
   // รีวิวแยก effect: คนละ server พังคนละแบบ รีวิวล่มแล้วหน้าหนังสือยังดูได้
   useEffect(() => {
@@ -112,12 +98,26 @@ function BookDetail() {
     );
   }
 
-  if (status === 'error') {
+  if (status === 'notfound') {
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
         <h1 className="font-serif text-2xl font-medium text-ink">ไม่พบหนังสือเล่มนี้</h1>
-        <p className="mt-2 text-sm text-ink-soft">{error.message}</p>
+        <p className="mt-2 text-sm text-ink-soft">หนังสืออาจถูกลบออกจากระบบแล้ว หรือลิงก์ไม่ถูกต้อง</p>
         <Link to="/books" className="mt-6 inline-block text-sm text-cloth hover:underline">กลับไปหน้าหนังสือ</Link>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-24 text-center" role="alert">
+        <h1 className="font-serif text-2xl font-medium text-ink">โหลดข้อมูลหนังสือไม่สำเร็จ</h1>
+        <p className="mt-2 text-sm text-ink-soft">{error?.message}</p>
+        <div className="mt-6 flex justify-center gap-4 text-sm">
+          <button onClick={() => setReloadBook(k => k + 1)}
+            className="rounded-md bg-cloth px-4 py-2 font-medium text-white hover:bg-cloth-dark">ลองใหม่</button>
+          <Link to="/books" className="self-center text-cloth hover:underline">กลับไปหน้าหนังสือ</Link>
+        </div>
       </div>
     );
   }
@@ -126,7 +126,7 @@ function BookDetail() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6">
       <button onClick={() => (location.key !== 'default' ? navigate(-1) : navigate('/books'))}
-              className="text-sm text-ink-soft hover:text-cloth">
+        className="text-sm text-ink-soft hover:text-cloth">
         กลับไปรายการหนังสือ
       </button>
 
@@ -144,13 +144,13 @@ function BookDetail() {
             )}
             {shownCategory && (
               <div><dt className="inline text-ink-faint">หมวด </dt>
-                <dd className="inline"><Link to={`/books?source=library&category=${encodeURIComponent(book.category)}`} className="text-cloth hover:underline">{shownCategory}</Link></dd>
+                <dd className="inline"><Link to={`/books?category=${encodeURIComponent(book.category)}`} className="text-cloth hover:underline">{shownCategory}</Link></dd>
               </div>
             )}
             {book.openlibraryKey && (
               <div><dt className="sr-only">แหล่งข้อมูล</dt>
                 <dd><a href={`https://openlibrary.org/works/${book.openlibraryKey}`} target="_blank" rel="noreferrer"
-                       className="text-ink-soft underline hover:text-cloth">ดูใน Open Library</a></dd>
+                  className="text-ink-soft underline hover:text-cloth">ดูใน Open Library</a></dd>
               </div>
             )}
           </dl>
@@ -184,7 +184,7 @@ function BookDetail() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-ink-soft">เข้าสู่ระบบเพื่อให้คะแนนและเขียนรีวิวเล่มนี้</p>
               <button onClick={() => navigate('/login', { state: { from: location.pathname, reason: 'review' } })}
-                      className="rounded-md bg-cloth px-4 py-2 text-sm font-medium text-white hover:bg-cloth-dark">
+                className="rounded-md bg-cloth px-4 py-2 text-sm font-medium text-white hover:bg-cloth-dark">
                 เข้าสู่ระบบเพื่อรีวิว
               </button>
             </div>
@@ -208,10 +208,10 @@ function BookDetail() {
             <>
               <h3 className="mb-3 font-medium text-ink">{mine ? 'แก้ไขรีวิวของคุณ' : 'เขียนรีวิว'}</h3>
               <ReviewForm key={mine?.id ?? 'new'} bookTitle={book.title}
-                          initial={mine ?? undefined}
-                          submitLabel={mine ? 'บันทึกการแก้ไข' : 'ส่งรีวิว'}
-                          onSubmit={mine ? handleUpdate : handleCreate}
-                          onCancel={mine ? () => setEditing(false) : undefined} />
+                initial={mine ?? undefined}
+                submitLabel={mine ? 'บันทึกการแก้ไข' : 'ส่งรีวิว'}
+                onSubmit={mine ? handleUpdate : handleCreate}
+                onCancel={mine ? () => setEditing(false) : undefined} />
             </>
           )}
         </div>

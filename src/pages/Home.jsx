@@ -4,12 +4,16 @@ import BookGrid from '../components/BookGrid';
 import BookCover from '../components/BookCover';
 import BookShelfCarousel from '../components/home/BookShelfCarousel';
 import { listBooks } from '../api/backend';
-import { getBooks } from '../api/openlibrary';
 import { useCategories } from '../data/categories';
 
 const HERO_SIZE = 5;                                         // ชั้นปกจริงในส่วนหัว (แบบเดิม)
 const SHELF_SIZE = 15;                                       // รวมกับชั้น 3 มิติด้านล่าง
 const HERO_WIDTHS = ['w-[84%]', 'w-full', 'w-[78%]', 'w-[92%]', 'w-[82%]'];
+
+// เล่มที่มีปกขึ้นชั้นก่อน เล่มไม่มีปกใช้ปกสำรอง
+export function pickShelf(books, size = SHELF_SIZE) {
+  return [...books.filter(b => b.coverUrl), ...books.filter(b => !b.coverUrl)].slice(0, size);
+}
 
 // หน้าแรก (โทนอบอุ่น ครีม–น้ำตาล แบบกระจก):
 // ส่วนหัวพร้อมชั้นปกจริงแบบเดิม, ชั้นหนังสือ 3 มิติแบบเลื่อนได้, หมวดหมู่, หนังสือที่สมาชิกให้คะแนนสูงสุด
@@ -23,7 +27,24 @@ function Home() {
   const [topStatus, setTopStatus] = useState('loading');
   const [topError, setTopError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const firstSubject = categories.find(c => c.olSubject)?.olSubject;
+
+  // ชั้นหนังสือ: หนังสือทั้งหมดใน Supabase ไม่จำกัดเฉพาะเล่มที่มีรีวิว
+  useEffect(() => {
+    let ignore = false;
+    setShelfStatus('loading');
+    listBooks({ pageSize: 48 })
+      .then(data => {
+        if (ignore) return;
+        setShelf(pickShelf(data.items));
+        setShelfStatus('success');
+      })
+      .catch(() => {
+        if (ignore) return;
+        setShelf([]);
+        setShelfStatus('error');
+      });
+    return () => { ignore = true; };
+  }, [reloadKey]);
 
   // หนังสือที่มีรีวิวในระบบ เรียงตามคะแนน (Go: GET /api/books?sort=rating)
   useEffect(() => {
@@ -38,28 +59,6 @@ function Home() {
       .catch(err => { if (!ignore) { setTopError(err); setTopStatus('error'); } });
     return () => { ignore = true; };
   }, [reloadKey]);
-
-  // ชั้นหนังสือ: ใช้เล่มที่สมาชิกรีวิวก่อน ไม่พอเติมจาก Open Library หมวดแรก (พลาดก็ใช้เท่าที่มี)
-  useEffect(() => {
-    if (topStatus === 'loading' || !firstSubject) return;
-    let ignore = false;
-    const reviewed = top.filter(b => b.coverUrl).slice(0, SHELF_SIZE);
-    if (reviewed.length >= SHELF_SIZE) {
-      setShelf(reviewed);
-      setShelfStatus('success');
-      return;
-    }
-    getBooks(firstSubject, 1)
-      .then(data => {
-        if (ignore) return;
-        const seen = new Set(reviewed.map(b => b.openlibraryKey));
-        const more = data.items.filter(b => b.coverUrl && !seen.has(b.openlibraryKey));
-        setShelf([...reviewed, ...more].slice(0, SHELF_SIZE));
-      })
-      .catch(() => { if (!ignore) setShelf(reviewed); })
-      .finally(() => { if (!ignore) setShelfStatus('success'); });
-    return () => { ignore = true; };
-  }, [top, topStatus, firstSubject]);
 
   function handleSearch(e) {
     e.preventDefault();
@@ -86,7 +85,7 @@ function Home() {
               รีวิวหนังสือจากคนที่อ่านจบแล้ว
             </h1>
             <p className="mt-5 max-w-md leading-relaxed text-cocoa-soft">
-              ค้นหนังสือหลายล้านเล่มจาก Open Library อ่านความเห็นของสมาชิก ให้คะแนน แล้วเก็บเล่มที่อยากอ่านไว้ในรายการของคุณ
+              ค้นหนังสือในคลังของเรา อ่านความเห็นของสมาชิก ให้คะแนน แล้วเก็บเล่มที่อยากอ่านไว้ในรายการของคุณ
             </p>
             <form onSubmit={handleSearch} role="search" className="glass mt-8 flex max-w-md gap-2 rounded-[18px] p-2">
               <label htmlFor="home-search" className="sr-only">ค้นชื่อหนังสือหรือผู้แต่ง</label>
@@ -110,7 +109,7 @@ function Home() {
                   {b.title
                     ? <BookCover src={b.coverUrl} title={b.title}
                                  className="origin-bottom transition-transform duration-300 group-hover:-translate-y-2 group-hover:-rotate-2" />
-                    : <div className="shimmer aspect-[2/3] rounded-[3px]" />}
+                    : <div className={'aspect-[2/3] rounded-[3px] ' + (shelfStatus === 'loading' ? 'shimmer' : 'bg-latte/40')} />}
                 </Link>
               ))}
             </div>
@@ -121,17 +120,17 @@ function Home() {
 
       {/* ชั้นหนังสือ 3 มิติ */}
       <section className="relative mx-auto max-w-6xl px-4 pt-12 md:px-6">
-        <BookShelfCarousel books={carousel} status={shelfStatus} />
+        <BookShelfCarousel books={carousel} status={shelfStatus === 'loading' ? 'loading' : 'success'} />
       </section>
 
       {/* หมวดหมู่ */}
       <section className="relative mx-auto max-w-6xl px-4 pt-16 md:px-6">
         <h2 className="font-round text-2xl">เลือกตามหมวด</h2>
         <ul className="mt-5 flex flex-wrap gap-2.5">
-          {categories.filter(c => c.olSubject).map(c => (
+          {categories.map(c => (
             <li key={c.name}>
               <Link to={`/books?category=${encodeURIComponent(c.name)}`}
-                    className="glass lift inline-flex min-h-11 items-center rounded-2xl px-4 text-cocoa hover:bg-white/80">
+                    className="lift inline-flex min-h-11 items-center rounded-2xl border border-latte-deep/60 bg-white/85 px-4 text-cocoa shadow-[0_4px_12px_-6px_rgba(59,49,42,.35)] hover:border-caramel hover:bg-cocoa hover:text-cream">
                 {c.nameTh}
               </Link>
             </li>
@@ -147,7 +146,7 @@ function Home() {
               <h2 className="font-round text-2xl">สมาชิกให้คะแนนสูงสุด</h2>
               <p className="mt-1 text-sm text-cocoa-soft">คะแนนเฉลี่ยจากรีวิวของสมาชิกเว็บนี้</p>
             </div>
-            <Link to="/books?source=library" className="shrink-0 text-sm font-semibold text-caramel hover:text-caramel-dark">ดูทั้งหมด</Link>
+            <Link to="/books" className="shrink-0 text-sm font-semibold text-caramel hover:text-caramel-dark">ดูทั้งหมด</Link>
           </div>
           <BookGrid books={top.slice(0, 6)} status={topStatus} error={topError} onRetry={() => setReloadKey(k => k + 1)}
                     empty={<>ยังไม่มีรีวิว <Link to="/books" className="text-caramel underline">เลือกหนังสือสักเล่ม</Link> แล้วเป็นคนแรกที่รีวิว</>} />

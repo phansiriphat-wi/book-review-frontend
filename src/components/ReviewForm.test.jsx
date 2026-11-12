@@ -44,7 +44,7 @@ test('โหมดแก้ไขต้องเติมค่าเดิม �
   const user = userEvent.setup();
   const onCancel = jest.fn();
   render(<ReviewForm bookTitle="Dune" initial={{ rating: 2, comment: 'รีวิวเดิมของฉัน' }}
-                     submitLabel="บันทึกการแก้ไข" onSubmit={jest.fn()} onCancel={onCancel} />);
+    submitLabel="บันทึกการแก้ไข" onSubmit={jest.fn()} onCancel={onCancel} />);
   expect(screen.getByRole('textbox')).toHaveValue('รีวิวเดิมของฉัน');
   expect(screen.getByLabelText('2 ดาว')).toBeChecked();
   await user.click(screen.getByRole('button', { name: 'ยกเลิก' }));

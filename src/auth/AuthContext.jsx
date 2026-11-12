@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import * as api from '../api/backend';
 
-// Context = "กล่องกลาง" ที่ component ไหนในแอปก็เอื้อมมาหยิบได้ (แนวเดียวกับ MovieHub)
 const AuthContext = createContext(null);
 
 const TOKEN_KEY = 'bookreview.token';
@@ -26,7 +25,7 @@ export function AuthProvider({ children }) {
   // อ่านค่าเดิมจาก localStorage จะได้ไม่หลุด login ตอน refresh
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
   const [user, setUser] = useState(readUser);
-  const [expired, setExpired] = useState(false);       // true เมื่อหลุดเพราะตั๋วหมดอายุ (หน้า Login แสดงข้อความ)
+  const [expired, setExpired] = useState(false);  
 
   function remember({ token, user }) {
     setToken(token);
@@ -37,20 +36,19 @@ export function AuthProvider({ children }) {
   }
 
   async function login(email, password) {
-    const data = await api.login(email, password);      // ถ้าผิด backend.js จะ throw
+    const data = await api.login(email, password);  
     remember(data);
   }
 
   async function register(name, email, password) {
     await api.register(name, email, password);
-    await login(email, password);                       // สมัครเสร็จล็อกอินให้เลย
+    await login(email, password);   
   }
 
   function logout() {
     forget(setToken, setUser);
   }
 
-  // Go ตอบ 401 ทั้งที่แนบตั๋วไป = ตั๋วหมดอายุ (อายุ 1 ชั่วโมง) ให้ออกจากระบบทันที
   useEffect(() => {
     function onUnauthorized() {
       forget(setToken, setUser);
@@ -65,7 +63,7 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// hook สั้น ๆ ให้ทุกหน้าเรียก useAuth() แทนที่จะต้อง import Context เอง
+
 export function useAuth() {
   return useContext(AuthContext);
 }

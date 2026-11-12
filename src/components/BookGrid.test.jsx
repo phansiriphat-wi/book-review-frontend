@@ -18,8 +18,8 @@ test('loading แสดงโครงการ์ด ไม่มีลิง�
 
 test('error แสดงข้อความและปุ่มลองใหม่', async () => {
   const onRetry = jest.fn();
-  renderGrid({ status: 'error', error: new Error('Open Library ตอบกลับ 503'), onRetry });
-  expect(screen.getByRole('alert')).toHaveTextContent('Open Library ตอบกลับ 503');
+  renderGrid({ status: 'error', error: new Error('server ตอบกลับ 503'), onRetry });
+  expect(screen.getByRole('alert')).toHaveTextContent('server ตอบกลับ 503');
   await userEvent.click(screen.getByRole('button', { name: 'ลองใหม่' }));
   expect(onRetry).toHaveBeenCalled();
 });

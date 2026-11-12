@@ -1,4 +1,4 @@
-// ชิ้นส่วนเล็ก ๆ ที่ทุกหน้าหลังบ้านใช้ซ้ำ: กล่อง error, ข้อความกำลังโหลด, คลาสปุ่ม, กล่องยืนยัน (แนวเดียวกับ MovieHub)
+// ชิ้นส่วนเล็ก ๆ ที่ทุกหน้าหลังบ้านใช้ซ้ำ: กล่อง error, ข้อความกำลังโหลด, คลาสปุ่ม, กล่องยืนยัน
 
 export function ErrorBox({ error, onRetry }) {
   return (
@@ -36,7 +36,7 @@ export const inputClass =
   'w-full rounded-md border border-line bg-white px-3 py-2 text-ink placeholder:text-ink-faint focus:border-cloth focus:outline-none focus:ring-2 focus:ring-cloth/20 disabled:bg-paper-shade';
 export const labelClass = 'mb-1 block text-sm font-medium text-ink';
 
-// กล่องยืนยันก่อนทำสิ่งที่ย้อนกลับไม่ได้ (ลบ) ไม่ต้องลงไลบรารี
+
 export function ConfirmBox({ open, title, children, confirmText = 'ยืนยัน', busy, onConfirm, onCancel }) {
   if (!open) return null;
   return (

@@ -1,6 +1,5 @@
 import { apiFetch, login, postReview, addToWishlist, listBooks, UNAUTHORIZED_EVENT } from './backend';
 
-// ตัวช่วยสร้าง "คำตอบปลอม" ของ fetch (แนวเดียวกับ backend.test.js ของ MovieHub)
 function fakeResponse(status, body) {
   return { ok: status >= 200 && status < 300, status, json: () => Promise.resolve(body) };
 }
@@ -20,17 +19,17 @@ test('GET ธรรมดา: ไม่มี body ไม่มี Authorization
   expect(options.headers.Authorization).toBeUndefined();
 });
 
-test('postReview ใช้รหัส Open Library ใน path แนบ Bearer token และส่ง rating + comment', async () => {
+test('postReview ใช้ id ของหนังสือใน path แนบ Bearer token และส่ง rating + comment', async () => {
   fetch.mockResolvedValue(fakeResponse(201, { id: 7 }));
-  await postReview('OL27448W', { rating: 5, comment: 'อ่านสนุกมาก วางไม่ลง', category: 'Fantasy' }, 'abc123');
+  await postReview(15, { rating: 5, comment: 'อ่านสนุกมาก วางไม่ลง', category: 'Fantasy' }, 'abc123');
   const [url, options] = fetch.mock.calls[0];
-  expect(url).toBe('/api/books/OL27448W/reviews');
+  expect(url).toBe('/api/books/15/reviews');
   expect(options.method).toBe('POST');
   expect(options.headers.Authorization).toBe('Bearer abc123');
   expect(JSON.parse(options.body)).toEqual({ rating: 5, comment: 'อ่านสนุกมาก วางไม่ลง', category: 'Fantasy' });
 });
 
-test('addToWishlist ส่ง bookId เป็นข้อความเสมอ (เลขในระบบหรือรหัส Open Library)', async () => {
+test('addToWishlist ส่ง bookId เป็นข้อความเสมอ', async () => {
   fetch.mockResolvedValue(fakeResponse(201, { id: 3 }));
   await addToWishlist(15, 't');
   expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ bookId: '15' });

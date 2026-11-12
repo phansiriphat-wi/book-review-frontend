@@ -3,7 +3,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { getAdminUsers } from '../../api/backend';
 import { ErrorBox, Loading, inputClass, dateTH } from '../../components/admin/AdminStates';
 
-// รายชื่อสมาชิก ดูอย่างเดียว (ตามโจทย์ ไม่มีการเปลี่ยนบทบาท)
+// รายชื่อสมาชิก ดูอย่างเดียว
 function AdminUsers() {
   const { token, user: me } = useAuth();
   const [users, setUsers] = useState([]);

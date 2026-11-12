@@ -3,8 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { inputClass, labelClass, btnPrimary } from '../components/admin/AdminStates';
 
-// โครงเดียวกับหน้า Login ต่างกันแค่ช่องกรอกและฟังก์ชันที่เรียก (เหมือน MovieHub)
-// สมัครใหม่ได้บทบาท member เสมอ (Go ไม่รับ role จากฟอร์ม)
+
 function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

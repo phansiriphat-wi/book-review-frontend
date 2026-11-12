@@ -1,11 +1,9 @@
-// ชั้นกลางสำหรับคุยกับ Go backend ของเรา (แนวเดียวกับ backend.js ของ MovieHub)
-// '' = origin เดียวกับหน้าเว็บ ตอนพัฒนา CRA จะ proxy /api ไปที่ http://localhost:8080 (ตั้งใน package.json)
-// บน Vercel ตั้ง REACT_APP_API_URL=https://<ชื่อ service>.onrender.com
+
 const BASE = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 
 export const UNAUTHORIZED_EVENT = 'bookreview:unauthorized';
 
-// ฟังก์ชันเดียวที่ fetch จริง ทุกฟังก์ชันด้านล่างเรียกผ่านตัวนี้
+
 export async function apiFetch(path, { method = 'GET', body, token } = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -68,11 +66,6 @@ export function listBooks({ q, category, sort, page = 1, pageSize = 24 } = {}) {
 }
 export function getBook(ref) {
   return apiFetch(`/api/books/${encodeURIComponent(ref)}`);
-}
-export async function getRatings(keys) {
-  if (keys.length === 0) return [];
-  const data = await apiFetch('/api/books/ratings' + qs({ keys: keys.join(',') }));
-  return data.items;                                       // [{ openlibraryKey, bookId, avgRating, reviewCount }]
 }
 
 // ---------- รีวิว ----------

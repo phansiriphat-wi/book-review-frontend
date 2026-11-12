@@ -3,7 +3,7 @@ import { validate, isHttpsUrl } from './AdminBookForm';
 const ok = { title: 'Dune', author: 'Frank Herbert', category: 'Science Fiction', description: '',
              coverUrl: 'https://covers.openlibrary.org/b/id/1-L.jpg', publishedYear: '1965', openlibraryKey: 'OL893415W' };
 
-// กติกาเดียวกับ validateBook ใน Go
+
 test('ข้อมูลครบ ไม่มี error', () => {
   expect(validate(ok)).toEqual({});
   expect(validate({ ...ok, coverUrl: '', publishedYear: '', openlibraryKey: '' })).toEqual({});
