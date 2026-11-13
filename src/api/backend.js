@@ -53,7 +53,19 @@ export function login(email, password) {
   return apiFetch('/api/auth/login', { method: 'POST', body: { email, password } });   // ได้ { token, user }
 }
 export function getMe(token) {
-  return apiFetch('/api/auth/me', { token });
+  return apiFetch('/api/auth/me', { token });               // User + reviewCount, wishlistCount
+}
+
+// ---------- โปรไฟล์ (ข้อมูลของคนที่ถือตั๋วเท่านั้น ไม่ส่ง id / role ไป) ----------
+export function updateProfile(name, token) {
+  return apiFetch('/api/auth/profile', { method: 'PATCH', body: { name }, token });   // User ฉบับใหม่
+}
+export function changePassword(currentPassword, newPassword, token) {
+  // รหัสปัจจุบันผิด Go ตอบ 400 WRONG_PASSWORD (ไม่ใช่ 401) จึงไม่ถูกพาออกจากระบบ
+  return apiFetch('/api/auth/change-password', { method: 'POST', body: { currentPassword, newPassword }, token });   // { token, user }
+}
+export function getMyReviews({ page = 1, pageSize = 5 } = {}, token) {
+  return apiFetch('/api/me/reviews' + qs({ page, pageSize }), { token });   // { items, total, page, pageSize, avgRating }
 }
 
 // ---------- หนังสือในระบบ ({ref} = เลขในระบบ หรือรหัส Open Library) ----------

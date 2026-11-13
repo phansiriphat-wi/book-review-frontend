@@ -10,7 +10,7 @@ import BookDetail from './pages/BookDetail';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Wishlist from './pages/Wishlist';
-import Account from './pages/Account';
+import Profile from './pages/Profile';
 import About from './pages/About';
 import NotFound from './pages/NotFound';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -34,7 +34,7 @@ function App() {
             <Route path="/books/:id" element={<BookDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/me" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+            <Route path="/me" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/me/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
             {/* หลังบ้าน: ครอบทั้งกิ่งด้วย RequireRole ครั้งเดียว หน้าลูกทุกหน้าได้รับการป้องกันหมด */}
             <Route path="/admin" element={<RequireRole role="admin"><AdminLayout /></RequireRole>}>

@@ -35,6 +35,19 @@ export function AuthProvider({ children }) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 
+  // หน้าโปรไฟล์แก้ชื่อสำเร็จ: เปลี่ยนชื่อบน navbar ทันทีโดยไม่ต้อง login ใหม่
+  // เก็บเฉพาะช่องเดิม (บทบาทมาจาก server ไม่ได้มาจากฟอร์ม)
+  function updateUser(next) {
+    const slim = { id: next.id, name: next.name, email: next.email, role: next.role };
+    setUser(slim);
+    localStorage.setItem(USER_KEY, JSON.stringify(slim));
+  }
+
+  // เปลี่ยนรหัสผ่านสำเร็จ: Go ออกตั๋วใบใหม่ให้ ใช้ใบใหม่ต่อเลย
+  function replaceSession({ token, user }) {
+    remember({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  }
+
   async function login(email, password) {
     const data = await api.login(email, password);  
     remember(data);
@@ -59,7 +72,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAdmin = user?.role === 'admin';
-  const value = { token, user, isLoggedIn: Boolean(token), isAdmin, expired, login, register, logout };
+  const value = { token, user, isLoggedIn: Boolean(token), isAdmin, expired, login, register, logout, updateUser, replaceSession };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
